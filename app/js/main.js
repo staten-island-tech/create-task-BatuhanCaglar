@@ -1,95 +1,115 @@
-const apiUrl = "https://eldenring.fanapis.com/api/weapons";
-const maxWeapons = 25;
-
 let weapons = [];
-let currentWeaponIndex = 0;
+let currentWeapon = null;
 let correctAnswers = [];
 let incorrectAnswers = [];
+let seenWeapons = new Set();
 
+// Fetch weapons from the API
 async function fetchWeapons() {
-  const response = await fetch(apiUrl);
-  const data = await response.json();
-  const allWeapons = data.data;
+  try {
+    const response = await fetch(
+      "https://eldenring.fanapis.com/api/weapons?limit=25"
+    );
+    const data = await response.json();
+    weapons = data.data.filter((weapon) => !seenWeapons.has(weapon.id));
+    shuffleArray(weapons); // Shuffle to randomize weapon order
+  } catch (error) {
+    console.error("Error fetching weapons:", error);
+    alert("Failed to load weapons. Please try again later.");
+  }
+}
 
-  while (weapons.length < maxWeapons) {
-    const randomWeapon =
-      allWeapons[Math.floor(Math.random() * allWeapons.length)];
-    if (!weapons.some((weapon) => weapon.name === randomWeapon.name)) {
-      weapons.push(randomWeapon);
-    }
+// Shuffle array (Fisher-Yates algorithm)
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+// Display the next weapon
+function displayWeapon() {
+  if (weapons.length === 0) {
+    endQuiz();
+    return;
+  }
+
+  currentWeapon = weapons.pop();
+  seenWeapons.add(currentWeapon.id);
+
+  const weaponName = document.getElementById("weapon-name");
+  weaponName.textContent = currentWeapon.name;
+
+  const progress = document.getElementById("progress");
+  progress.textContent = `Weapons Remaining: ${weapons.length}`;
+}
+
+// Handle user's choice
+function handleChoice(event) {
+  if (!event.target.classList.contains("option-btn")) return;
+
+  const stat = event.target.dataset.stat;
+  const correctStat = "1"; // Example: Stat 1 is the "correct" answer
+
+  if (stat === correctStat) {
+    correctAnswers.push(currentWeapon.name);
+  } else {
+    incorrectAnswers.push(currentWeapon.name);
   }
 
   displayWeapon();
 }
 
-function displayWeapon() {
-  const weapon = weapons[currentWeaponIndex];
-  const weaponNameEl = document.getElementById("weapon-name");
-  const choicesContainer = document.getElementById("choices-container");
-  const nextButton = document.getElementById("next-button");
-
-  weaponNameEl.textContent = weapon.name;
-  choicesContainer.innerHTML = "";
-
-  const choices = [
-    weapon.attack,
-    weapon.defense,
-    weapon.weight,
-    weapon.dexterity,
-  ];
-  choices.sort(() => Math.random() - 0.5);
-
-  choices.forEach((choice) => {
-    const button = document.createElement("button");
-    button.textContent = choice;
-    button.className = "bg-gray-700 px-4 py-2 rounded hover:bg-gray-500";
-    button.addEventListener("click", () => {
-      if (choice === weapon.attack) {
-        correctAnswers.push(weapon);
-      } else {
-        incorrectAnswers.push(weapon);
-      }
-      nextButton.classList.remove("hidden");
-    });
-    choicesContainer.appendChild(button);
-  });
-}
-
-document.getElementById("next-button").addEventListener("click", () => {
-  currentWeaponIndex++;
-  if (currentWeaponIndex < weapons.length) {
-    displayWeapon();
-    document.getElementById("next-button").classList.add("hidden");
-  } else {
-    displayResults();
-  }
-});
-
-function displayResults() {
-  const resultsContainer = document.getElementById("results");
-  const scoreEl = document.getElementById("score");
-
-  const total = weapons.length;
-  const correct = correctAnswers.length;
-  const percentage = ((correct / total) * 100).toFixed(2);
-
-  scoreEl.textContent = `Score: ${correct}/${total} (${percentage}%)`;
-  resultsContainer.classList.remove("hidden");
-}
-
-document.getElementById("view-results").addEventListener("click", () => {
-  const detailedResults = document.getElementById("detailed-results");
+// End the quiz
+function endQuiz() {
+  const quizContainer = document.getElementById("quiz-container");
+  const resultsContainer = document.getElementById("results-container");
+  const score = document.getElementById("score");
   const correctList = document.getElementById("correct-list");
   const incorrectList = document.getElementById("incorrect-list");
 
+  quizContainer.classList.add("hidden");
+  resultsContainer.classList.remove("hidden");
+
+  const total = correctAnswers.length + incorrectAnswers.length;
+  score.textContent = `Score: ${correctAnswers.length}/${total} (${(
+    (correctAnswers.length / total) *
+    100
+  ).toFixed(2)}%)`;
+
   correctList.innerHTML = correctAnswers
-    .map((weapon) => `<li>${weapon.name}</li>`)
+    .map((name) => `<li>${name}</li>`)
     .join("");
   incorrectList.innerHTML = incorrectAnswers
-    .map((weapon) => `<li>${weapon.name}</li>`)
+    .map((name) => `<li>${name}</li>`)
     .join("");
+}
 
-  detailedResults.classList.remove("hidden");
-});
+// Restart the quiz
+function restartQuiz() {
+  correctAnswers = [];
+  incorrectAnswers = [];
+  seenWeapons.clear();
 
-fetchWeapons();
+  document.getElementById("quiz-container").classList.remove("hidden");
+  document.getElementById("results-container").classList.add("hidden");
+
+  initializeQuiz();
+}
+
+// Initialize the quiz
+async function initializeQuiz() {
+  await fetchWeapons();
+  if (weapons.length > 0) {
+    displayWeapon();
+  } else {
+    alert("No weapons found. Please try again later.");
+  }
+}
+
+// Event listeners
+document.getElementById("options").addEventListener("click", handleChoice);
+document.getElementById("restart-btn").addEventListener("click", restartQuiz);
+
+// Start the quiz
+initializeQuiz();
