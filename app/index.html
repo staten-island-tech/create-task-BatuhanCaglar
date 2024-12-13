@@ -1,34 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Elden Ring Weapon Quiz</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="script.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Handjet:wght@100..900&display=swap" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Handjet:wght@100..900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
-    <div class="container">
-        <h1>Elden Ring Weapon Quiz</h1>
-        <div id="quiz-container">
-            <p id="weapon-name" class="weapon-name"></p>
-            <div id="options" class="options">
-                <button class="option-btn" data-stat="1">Stat 1</button>
-                <button class="option-btn" data-stat="2">Stat 2</button>
-                <button class="option-btn" data-stat="3">Stat 3</button>
-                <button class="option-btn" data-stat="4">Stat 4</button>
-            </div>
-            <p id="progress" class="progress"></p>
+    <h1>ELDEN RING QUIZ</h1>
+    <div id="quiz-container">
+        <h2 id="weapon-name"></h2>
+        <img id="weapon-image" src="" alt="Weapon Image" />
+        <p id="weapon-description"></p>
+        <ul id="weapon-scaleswith"></ul>
+    
+        <div id="options">
+            <button class="option-btn" data-stat="strength">Strength</button>
+            <button class="option-btn" data-stat="dexterity">Dexterity</button>
+            <button class="option-btn" data-stat="faith">Faith</button>
+            <button class="option-btn" data-stat="arcane">Arcane</button>
+            <button class="option-btn" data-stat="intelligence">Intelligence</button>
         </div>
-        <div id="results-container" class="hidden">
-            <h2>Quiz Results</h2>
-            <p id="score"></p>
-            <h3>Correct:</h3>
-            <ul id="correct-list"></ul>
-            <h3>Incorrect:</h3>
-            <ul id="incorrect-list"></ul>
-            <button id="restart-btn">Restart Quiz</button>
-        </div>
+        <p id="progress"></p>
     </div>
+    <div id="results-container" class="hidden">
+        <h2 id="score"></h2>
+        <h3>Correct:</h3>
+        <ul id="correct-list"></ul>
+        <h3>Incorrect:</h3>
+        <ul id="incorrect-list"></ul>
+        <button id="restart-btn">Restart Quiz</button>
+    </div>
+    <script type="module" src="./js/main.js"></script>   
 </body>
 </html>

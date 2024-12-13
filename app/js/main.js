@@ -1,3 +1,5 @@
+import "../css/style.css";
+
 let weapons = [];
 let currentWeapon = null;
 let correctAnswers = [];
@@ -11,7 +13,15 @@ async function fetchWeapons() {
       "https://eldenring.fanapis.com/api/weapons?limit=25"
     );
     const data = await response.json();
-    weapons = data.data.filter((weapon) => !seenWeapons.has(weapon.id));
+
+    // Filter weapons to ensure they have valid scaling data
+    weapons = data.data.filter(
+      (weapon) =>
+        !seenWeapons.has(weapon.id) &&
+        weapon.scalesWith &&
+        weapon.scalesWith.length > 0
+    );
+
     shuffleArray(weapons); // Shuffle to randomize weapon order
   } catch (error) {
     console.error("Error fetching weapons:", error);
@@ -37,8 +47,19 @@ function displayWeapon() {
   currentWeapon = weapons.pop();
   seenWeapons.add(currentWeapon.id);
 
+  // Display weapon details
   const weaponName = document.getElementById("weapon-name");
+  const weaponImage = document.getElementById("weapon-image");
+  const weaponDescription = document.getElementById("weapon-description");
+  const weaponScalesWith = document.getElementById("weapon-scaleswith");
+
   weaponName.textContent = currentWeapon.name;
+  weaponImage.src = currentWeapon.image || "placeholder.png"; // Placeholder if no image
+  weaponDescription.textContent =
+    currentWeapon.description || "No description available.";
+  weaponScalesWith.innerHTML = currentWeapon.scalesWith
+    .map((scale) => `<li>${scale.name}: ${scale.scaling}</li>`)
+    .join("");
 
   const progress = document.getElementById("progress");
   progress.textContent = `Weapons Remaining: ${weapons.length}`;
@@ -48,10 +69,14 @@ function displayWeapon() {
 function handleChoice(event) {
   if (!event.target.classList.contains("option-btn")) return;
 
-  const stat = event.target.dataset.stat;
-  const correctStat = "1"; // Example: Stat 1 is the "correct" answer
+  const selectedStat = event.target.dataset.stat;
 
-  if (stat === correctStat) {
+  // Get valid stats from the weapon's scalesWith
+  const validStats = currentWeapon.scalesWith.map((scale) =>
+    scale.name.toLowerCase()
+  );
+
+  if (validStats.includes(selectedStat)) {
     correctAnswers.push(currentWeapon.name);
   } else {
     incorrectAnswers.push(currentWeapon.name);
