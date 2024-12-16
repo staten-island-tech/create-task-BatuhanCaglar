@@ -1,18 +1,22 @@
-body {
-    background-color: #282c34;
-    color: white;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    flex-direction: column;
+html,body,*{
+    margin: padding 0;
+    box-sizing: border-box;
+    font-size:10px;
+    background-color: var(--tertiary);
 }
 
-.container {
-    text-align: center;
-    width: 100%;
-    max-width: 600px;
+:root{
+    --primary: #ffffff;
+    --tertiary: #292323;
+    --secondary: #829bb3;
+    --fontcolor: black;
+    --button:white;
+
+    --h1: 7.594rem;
+    --h2: 5.063rem;
+    --h3: 3.375rem;
+    --h4: 2.25rem;
+    --h5: 1.5rem;
 }
 
 h1 {
@@ -20,33 +24,55 @@ h1 {
     font-optical-sizing: auto;
     
     text-align: center;
-    font-size: 2.5rem;
-    margin-bottom: 20px;
+    font-size: var(--h1);
+}
+
+h2{
+    font-family: "Handjet", sans-serif;
+    font-optical-sizing: auto;
+    
+    text-align: center;
+    font-size: var(--h2); 
+}
+
+p, ul{
+    font-family: "Rajdhani", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+    font-size: var(--h3);
+    line-height: 0.6rem;
+    text-align: center;
+}
+    
+
+.container {
+    text-align: center;
+    width: 85vw;
 }
 
 #quiz-container, #results-container {
-    background-color: #3c3f46;
-    padding: 20px;
-    border-radius: 8px;
+    background-color: var(--primary);
+    padding: 2rem;
+    border-radius: 1.5rem;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
     width: 100%;
 }
 
 .weapon-name {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
+    font-size: var(--h2);
+    margin-bottom: 2rem;
 }
 
 .options {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 1rem;
 }
 
 .option-btn {
-    padding: 10px;
+    padding: 1rem;
     border: none;
-    border-radius: 5px;
+    border-radius: 1rem;
     background-color: #5a5e68;
     color: white;
     cursor: pointer;
@@ -58,8 +84,8 @@ h1 {
 }
 
 .progress {
-    margin-top: 20px;
-    font-size: 1rem;
+    margin-top: 2rem;
+    font-size: var(--h3);
 }
 
 .hidden {

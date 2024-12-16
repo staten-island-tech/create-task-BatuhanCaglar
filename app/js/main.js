@@ -6,7 +6,6 @@ let correctAnswers = [];
 let incorrectAnswers = [];
 let seenWeapons = new Set();
 
-// Fetch weapons from the API
 async function fetchWeapons() {
   try {
     const response = await fetch(
@@ -14,7 +13,6 @@ async function fetchWeapons() {
     );
     const data = await response.json();
 
-    // Filter weapons to ensure they have valid scaling data
     weapons = data.data.filter(
       (weapon) =>
         !seenWeapons.has(weapon.id) &&
@@ -22,14 +20,13 @@ async function fetchWeapons() {
         weapon.scalesWith.length > 0
     );
 
-    shuffleArray(weapons); // Shuffle to randomize weapon order
+    shuffleArray(weapons);
   } catch (error) {
     console.error("Error fetching weapons:", error);
     alert("Failed to load weapons. Please try again later.");
   }
 }
 
-// Shuffle array (Fisher-Yates algorithm)
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -37,7 +34,6 @@ function shuffleArray(array) {
   }
 }
 
-// Display the next weapon
 function displayWeapon() {
   if (weapons.length === 0) {
     endQuiz();
@@ -47,31 +43,34 @@ function displayWeapon() {
   currentWeapon = weapons.pop();
   seenWeapons.add(currentWeapon.id);
 
-  // Display weapon details
+  // DOM selectors for updating weapon data
   const weaponName = document.getElementById("weapon-name");
   const weaponImage = document.getElementById("weapon-image");
   const weaponDescription = document.getElementById("weapon-description");
   const weaponScalesWith = document.getElementById("weapon-scaleswith");
 
+  // Populate details
   weaponName.textContent = currentWeapon.name;
-  weaponImage.src = currentWeapon.image || "placeholder.png"; // Placeholder if no image
+  weaponImage.src = currentWeapon.image || "placeholder.png";
   weaponDescription.textContent =
     currentWeapon.description || "No description available.";
+
+  // Display scaling stats
   weaponScalesWith.innerHTML = currentWeapon.scalesWith
     .map((scale) => `<li>${scale.name}: ${scale.scaling}</li>`)
     .join("");
 
+  // Update progress display
   const progress = document.getElementById("progress");
   progress.textContent = `Weapons Remaining: ${weapons.length}`;
 }
 
-// Handle user's choice
 function handleChoice(event) {
   if (!event.target.classList.contains("option-btn")) return;
 
-  const selectedStat = event.target.dataset.stat;
+  const selectedStat = event.target.dataset.stat.toLowerCase();
 
-  // Get valid stats from the weapon's scalesWith
+  // Check if selected stat matches valid scaling stats
   const validStats = currentWeapon.scalesWith.map((scale) =>
     scale.name.toLowerCase()
   );
@@ -85,7 +84,6 @@ function handleChoice(event) {
   displayWeapon();
 }
 
-// End the quiz
 function endQuiz() {
   const quizContainer = document.getElementById("quiz-container");
   const resultsContainer = document.getElementById("results-container");
@@ -93,6 +91,7 @@ function endQuiz() {
   const correctList = document.getElementById("correct-list");
   const incorrectList = document.getElementById("incorrect-list");
 
+  // Hide quiz and show results
   quizContainer.classList.add("hidden");
   resultsContainer.classList.remove("hidden");
 
@@ -102,6 +101,7 @@ function endQuiz() {
     100
   ).toFixed(2)}%)`;
 
+  // Display correct and incorrect answers
   correctList.innerHTML = correctAnswers
     .map((name) => `<li>${name}</li>`)
     .join("");
@@ -110,7 +110,6 @@ function endQuiz() {
     .join("");
 }
 
-// Restart the quiz
 function restartQuiz() {
   correctAnswers = [];
   incorrectAnswers = [];
@@ -122,7 +121,6 @@ function restartQuiz() {
   initializeQuiz();
 }
 
-// Initialize the quiz
 async function initializeQuiz() {
   await fetchWeapons();
   if (weapons.length > 0) {
