@@ -1,138 +1,110 @@
 import "../css/style.css";
 
+// Global variables
 let weapons = [];
-let currentWeapon = null;
-let correctAnswers = [];
-let incorrectAnswers = [];
-let seenWeapons = new Set();
+let currentWeaponIndex = 0;
+let correctGuesses = [];
+let wrongGuesses = [];
 
+// Fetch weapons from the API and initialize the game
 async function fetchWeapons() {
   try {
     const response = await fetch(
-      "https://eldenring.fanapis.com/api/weapons?limit=25"
+      "https://eldenring.fanapis.com/api/weapons?limit=250"
     );
     const data = await response.json();
 
-    weapons = data.data.filter(
-      (weapon) =>
-        !seenWeapons.has(weapon.id) &&
-        weapon.scalesWith &&
-        weapon.scalesWith.length > 0
+    // Filter only valid weapons that have "scalesWith" data
+    const validWeapons = data.data.filter(
+      (weapon) => weapon.scalesWith && weapon.scalesWith.length > 0
     );
+    weapons = getRandomWeapons(validWeapons, 25);
 
-    shuffleArray(weapons);
+    displayWeapon();
   } catch (error) {
     console.error("Error fetching weapons:", error);
-    alert("Failed to load weapons. Please try again later.");
+    alert(
+      "Failed to load weapon data. Please check your internet connection and try again."
+    );
   }
 }
 
-function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
+// Utility function: Randomly pick N items from the array
+function getRandomWeapons(data, n) {
+  const shuffled = data.sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, n).map((weapon) => ({
+    name: weapon.name || "Unknown Weapon",
+    description: weapon.description || "No description available.",
+    image: weapon.image || "https://via.placeholder.com/300",
+    scalesWith: weapon.scalesWith.map((scaling) => scaling.name), // Extract only scaling names
+  }));
 }
 
+// Display the current weapon
 function displayWeapon() {
-  if (weapons.length === 0) {
-    endQuiz();
+  if (currentWeaponIndex >= weapons.length) {
+    showResults(); // End the game when all weapons have been presented
     return;
   }
 
-  currentWeapon = weapons.pop();
-  seenWeapons.add(currentWeapon.id);
+  const weapon = weapons[currentWeaponIndex];
 
-  // DOM selectors for updating weapon data
-  const weaponName = document.getElementById("weapon-name");
-  const weaponImage = document.getElementById("weapon-image");
-  const weaponDescription = document.getElementById("weapon-description");
-  const weaponScalesWith = document.getElementById("weapon-scaleswith");
+  // Update DOM elements with weapon details
+  document.getElementById("weapon-name").innerText = weapon.name;
+  document.getElementById("weapon-description").innerText = weapon.description;
+  document.getElementById("weapon-image").src = weapon.image;
+  document.getElementById("weapon-image").alt = weapon.name;
 
-  // Populate details
-  weaponName.textContent = currentWeapon.name;
-  weaponImage.src = currentWeapon.image || "placeholder.png";
-  weaponDescription.textContent =
-    currentWeapon.description || "No description available.";
-
-  // Display scaling stats
-  weaponScalesWith.innerHTML = currentWeapon.scalesWith
-    .map((scale) => `<li>${scale.name}: ${scale.scaling}</li>`)
-    .join("");
-
-  // Update progress display
-  const progress = document.getElementById("progress");
-  progress.textContent = `Weapons Remaining: ${weapons.length}`;
+  // Clear previous feedback
+  document.getElementById("feedback").innerText = "";
 }
 
-function handleChoice(event) {
-  if (!event.target.classList.contains("option-btn")) return;
+// Handle user's guess
+function makeGuess(choice) {
+  const weapon = weapons[currentWeaponIndex];
+  const correctScaling = weapon.scalesWith;
 
-  const selectedStat = event.target.dataset.stat.toLowerCase();
-
-  // Check if selected stat matches valid scaling stats
-  const validStats = currentWeapon.scalesWith.map((scale) =>
-    scale.name.toLowerCase()
-  );
-
-  if (validStats.includes(selectedStat)) {
-    correctAnswers.push(currentWeapon.name);
+  // Check user's guess
+  if (correctScaling.includes(choice)) {
+    correctGuesses.push(weapon.name);
+    document.getElementById("feedback").innerText = "✅ Correct! Good job!";
   } else {
-    incorrectAnswers.push(currentWeapon.name);
+    wrongGuesses.push(weapon.name);
+    document.getElementById(
+      "feedback"
+    ).innerText = `❌ Wrong! Correct answers: ${correctScaling.join(", ")}`;
   }
 
-  displayWeapon();
+  // Proceed to the next weapon after 1 second
+  setTimeout(() => {
+    currentWeaponIndex++; // Increment the index
+    displayWeapon(); // Display the next weapon
+  }, 1000);
 }
 
-function endQuiz() {
-  const quizContainer = document.getElementById("quiz-container");
-  const resultsContainer = document.getElementById("results-container");
-  const score = document.getElementById("score");
-  const correctList = document.getElementById("correct-list");
-  const incorrectList = document.getElementById("incorrect-list");
+// Display the final results
+function showResults() {
+  const total = correctGuesses.length + wrongGuesses.length;
+  const percentage = ((correctGuesses.length / total) * 100).toFixed(2);
 
-  // Hide quiz and show results
-  quizContainer.classList.add("hidden");
-  resultsContainer.classList.remove("hidden");
+  const resultsHTML = `
+        <h2>Game Over!</h2>
+        <p>Correct: ${correctGuesses.length} / ${total} (${percentage}%)</p>
+        <p>Wrong: ${wrongGuesses.length}</p>
+    `;
 
-  const total = correctAnswers.length + incorrectAnswers.length;
-  score.textContent = `Score: ${correctAnswers.length}/${total} (${(
-    (correctAnswers.length / total) *
-    100
-  ).toFixed(2)}%)`;
+  document.getElementById("results").innerHTML = resultsHTML;
 
-  // Display correct and incorrect answers
-  correctList.innerHTML = correctAnswers
-    .map((name) => `<li>${name}</li>`)
-    .join("");
-  incorrectList.innerHTML = incorrectAnswers
-    .map((name) => `<li>${name}</li>`)
-    .join("");
+  // Hide the game container
+  document.getElementById("game-container").style.display = "none";
 }
 
-function restartQuiz() {
-  correctAnswers = [];
-  incorrectAnswers = [];
-  seenWeapons.clear();
+// Attach event listeners to buttons
+document.querySelectorAll(".guess-button").forEach((button) => {
+  button.addEventListener("click", () => {
+    makeGuess(button.innerText);
+  });
+});
 
-  document.getElementById("quiz-container").classList.remove("hidden");
-  document.getElementById("results-container").classList.add("hidden");
-
-  initializeQuiz();
-}
-
-async function initializeQuiz() {
-  await fetchWeapons();
-  if (weapons.length > 0) {
-    displayWeapon();
-  } else {
-    alert("No weapons found. Please try again later.");
-  }
-}
-
-// Event listeners
-document.getElementById("options").addEventListener("click", handleChoice);
-document.getElementById("restart-btn").addEventListener("click", restartQuiz);
-
-// Start the quiz
-initializeQuiz();
+// Start the game
+fetchWeapons();

@@ -16,31 +16,21 @@
 </head>
 
 <body>
-    <h1>ELDEN RING QUIZ</h1>
-    <div id="quiz-container">
-        <h2 id="weapon-name"></h2>
-        <img id="weapon-image" src="placeholder.png" alt="Weapon Image" />
-        <p id="weapon-description"></p>
-        <ul id="weapon-scaleswith"></ul>
-        <div id="options">
-          <button class="option-btn" data-stat="strength">Strength</button>
-          <button class="option-btn" data-stat="dexterity">Dexterity</button>
-          <button class="option-btn" data-stat="intelligence">Intelligence</button>
-          <button class="option-btn" data-stat="faith">Faith</button>
-          <button class="option-btn" data-stat="arcane">Arcane</button>
-        </div>
-        <p id="progress"></p>
+  <h1>Elden Ring Weapon Guessing Game</h1>
+  <div id="game-container">
+      <h2 id="weapon-name"></h2>
+      <p id="weapon-description"></p>
+      <img id="weapon-image" src="" alt="Weapon Image">
+      <div id="choices">
+          <button onclick="makeGuess('Strength')">Strength</button>
+          <button onclick="makeGuess('Dexterity')">Dexterity</button>
+          <button onclick="makeGuess('Intelligence')">Intelligence</button>
+          <button onclick="makeGuess('Faith')">Faith</button>
+          <button onclick="makeGuess('Arcane')">Arcane</button>
       </div>
-      
-      <div id="results-container" class="hidden">
-        <h2>Quiz Complete!</h2>
-        <p id="score"></p>
-        <h3>Correct Answers</h3>
-        <ul id="correct-list"></ul>
-        <h3>Incorrect Answers</h3>
-        <ul id="incorrect-list"></ul>
-        <button id="restart-btn">Restart Quiz</button>
-      </div>
+      <p id="feedback"></p>
+  </div>
+  <div id="results"></div>
     <script type="module" src="./js/main.js"></script>   
 </body>
 </html>

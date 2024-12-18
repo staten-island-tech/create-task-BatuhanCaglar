@@ -19,75 +19,66 @@ html,body,*{
     --h5: 1.5rem;
 }
 
+/* General styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #2d2d2d;
+    color: #fff;
+    text-align: center;
+}
+
+/* Header */
 h1 {
-    font-family: "Handjet", sans-serif;
-    font-optical-sizing: auto;
-    
-    text-align: center;
-    font-size: var(--h1);
+    margin: 20px 0;
 }
 
-h2{
-    font-family: "Handjet", sans-serif;
-    font-optical-sizing: auto;
-    
-    text-align: center;
-    font-size: var(--h2); 
+/* Game Container */
+#game-container {
+    margin: auto;
+    width: 90%;
+    max-width: 600px;
+    background-color: #444;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
 }
 
-p, ul{
-    font-family: "Rajdhani", sans-serif;
-    font-weight: 300;
-    font-style: normal;
-    font-size: var(--h3);
-    line-height: 0.6rem;
-    text-align: center;
-}
-    
-
-.container {
-    text-align: center;
-    width: 85vw;
+/* Image Styling */
+img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 20px;
 }
 
-#quiz-container, #results-container {
-    background-color: var(--primary);
-    padding: 2rem;
-    border-radius: 1.5rem;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
-    width: 100%;
-}
-
-.weapon-name {
-    font-size: var(--h2);
-    margin-bottom: 2rem;
-}
-
-.options {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.option-btn {
-    padding: 1rem;
+/* Buttons */
+button {
+    margin: 10px;
+    padding: 10px 20px;
+    background-color: #5c8ef6;
+    color: #fff;
     border: none;
-    border-radius: 1rem;
-    background-color: #5a5e68;
-    color: white;
+    border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
 }
 
-.option-btn:hover {
-    background-color: #737880;
+button:hover {
+    background-color: #436ecf;
 }
 
-.progress {
-    margin-top: 2rem;
-    font-size: var(--h3);
+/* Results Section */
+#results {
+    margin-top: 20px;
+    font-size: 1.1rem;
 }
 
-.hidden {
-    display: none;
+/* Feedback Text */
+#feedback {
+    margin-top: 10px;
+    font-size: 1rem;
+    color: #ffd700;
 }
