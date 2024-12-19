@@ -6,6 +6,16 @@ let currentWeaponIndex = 0;
 let correctGuesses = [];
 let wrongGuesses = [];
 
+// Scaling priority mapping
+const scalingPriority = {
+  E: 1,
+  D: 2,
+  C: 3,
+  B: 4,
+  A: 5,
+  S: 6, // In some games, "S" represents the highest scaling
+};
+
 // Fetch weapons from the API and initialize the game
 async function fetchWeapons() {
   try {
@@ -14,13 +24,13 @@ async function fetchWeapons() {
     );
     const data = await response.json();
 
-    // Filter only valid weapons that have "scalesWith" data
+    // Filter valid weapons (only those with "scalesWith" data)
     const validWeapons = data.data.filter(
       (weapon) => weapon.scalesWith && weapon.scalesWith.length > 0
     );
     weapons = getRandomWeapons(validWeapons, 25);
 
-    displayWeapon();
+    displayWeapon(); // Start the game by displaying the first weapon
   } catch (error) {
     console.error("Error fetching weapons:", error);
     alert(
@@ -36,26 +46,46 @@ function getRandomWeapons(data, n) {
     name: weapon.name || "Unknown Weapon",
     description: weapon.description || "No description available.",
     image: weapon.image || "https://via.placeholder.com/300",
-    scalesWith: weapon.scalesWith.map((scaling) => scaling.name), // Extract only scaling names
+    scalesWith: determineCorrectScaling(weapon.scalesWith), // Process scaling data
   }));
+}
+
+// Determine the correct scaling(s) for a weapon
+function determineCorrectScaling(scalesWith) {
+  // Group scaling attributes by their priority
+  const scalingGroups = scalesWith.reduce((groups, scaling) => {
+    const priority = scalingPriority[scaling.scaling] || 0;
+    if (!groups[priority]) {
+      groups[priority] = [];
+    }
+    groups[priority].push(scaling.name);
+    return groups;
+  }, {});
+
+  // Get the highest priority group
+  const highestPriority = Math.max(...Object.keys(scalingGroups).map(Number));
+  return scalingGroups[highestPriority] || [];
 }
 
 // Display the current weapon
 function displayWeapon() {
   if (currentWeaponIndex >= weapons.length) {
-    showResults(); // End the game when all weapons have been presented
+    showResults(); // End the game when all weapons are used
     return;
   }
 
   const weapon = weapons[currentWeaponIndex];
 
-  // Update DOM elements with weapon details
+  // Log scaling data to the console
+  console.log(`Scaling data for ${weapon.name}:`, weapon.scalesWith);
+
+  // Update the DOM elements with weapon details
   document.getElementById("weapon-name").innerText = weapon.name;
   document.getElementById("weapon-description").innerText = weapon.description;
   document.getElementById("weapon-image").src = weapon.image;
   document.getElementById("weapon-image").alt = weapon.name;
 
-  // Clear previous feedback
+  // Clear feedback for the new weapon
   document.getElementById("feedback").innerText = "";
 }
 
@@ -64,22 +94,20 @@ function makeGuess(choice) {
   const weapon = weapons[currentWeaponIndex];
   const correctScaling = weapon.scalesWith;
 
-  // Check user's guess
+  // Log user's choice and correct answers
+  console.log(`User's choice: ${choice}`);
+  console.log(`Correct answers: ${correctScaling.join(", ")}`);
+
+  // Check if the choice is correct
   if (correctScaling.includes(choice)) {
     correctGuesses.push(weapon.name);
-    document.getElementById("feedback").innerText = "✅ Correct! Good job!";
   } else {
     wrongGuesses.push(weapon.name);
-    document.getElementById(
-      "feedback"
-    ).innerText = `❌ Wrong! Correct answers: ${correctScaling.join(", ")}`;
   }
 
-  // Proceed to the next weapon after 1 second
-  setTimeout(() => {
-    currentWeaponIndex++; // Increment the index
-    displayWeapon(); // Display the next weapon
-  }, 1000);
+  // Move to the next weapon immediately
+  currentWeaponIndex++;
+  displayWeapon();
 }
 
 // Display the final results
@@ -91,18 +119,40 @@ function showResults() {
         <h2>Game Over!</h2>
         <p>Correct: ${correctGuesses.length} / ${total} (${percentage}%)</p>
         <p>Wrong: ${wrongGuesses.length}</p>
+        <h3>Correct Answers:</h3>
+        <ul>${correctGuesses.map((name) => `<li>${name}</li>`).join("")}</ul>
+        <h3>Wrong Answers:</h3>
+        <ul>${wrongGuesses.map((name) => `<li>${name}</li>`).join("")}</ul>
+        <button id="retry-button">Retake Quiz</button>
     `;
 
   document.getElementById("results").innerHTML = resultsHTML;
 
   // Hide the game container
   document.getElementById("game-container").style.display = "none";
+
+  // Attach event listener to retry button
+  document.getElementById("retry-button").addEventListener("click", retakeQuiz);
+}
+
+// Retake the quiz
+function retakeQuiz() {
+  // Reset variables
+  currentWeaponIndex = 0;
+  correctGuesses = [];
+  wrongGuesses = [];
+
+  // Clear results and show the game container again
+  document.getElementById("results").innerHTML = "";
+  document.getElementById("game-container").style.display = "block";
+
+  displayWeapon(); // Restart the game
 }
 
 // Attach event listeners to buttons
 document.querySelectorAll(".guess-button").forEach((button) => {
   button.addEventListener("click", () => {
-    makeGuess(button.innerText);
+    makeGuess(button.innerText); // Pass button text (e.g., "Strength") as the guess
   });
 });
 

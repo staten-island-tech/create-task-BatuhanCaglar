@@ -16,21 +16,25 @@
 </head>
 
 <body>
-  <h1>Elden Ring Weapon Guessing Game</h1>
-  <div id="game-container">
-      <h2 id="weapon-name"></h2>
-      <p id="weapon-description"></p>
-      <img id="weapon-image" src="" alt="Weapon Image">
-      <div id="choices">
-          <button onclick="makeGuess('Strength')">Strength</button>
-          <button onclick="makeGuess('Dexterity')">Dexterity</button>
-          <button onclick="makeGuess('Intelligence')">Intelligence</button>
-          <button onclick="makeGuess('Faith')">Faith</button>
-          <button onclick="makeGuess('Arcane')">Arcane</button>
-      </div>
-      <p id="feedback"></p>
-  </div>
-  <div id="results"></div>
+    <div id="game-container">
+        <h1>Elden Ring Weapon Guessing Game</h1>
+        <h2 id="weapon-name"></h2>
+        <p id="weapon-description"></p>
+        <img id="weapon-image" src="" alt="Weapon Image" />
+    
+        <div id="buttons">
+            <button class="guess-button">Strength</button>
+            <button class="guess-button">Dexterity</button>
+            <button class="guess-button">Intelligence</button>
+            <button class="guess-button">Faith</button>
+            <button class="guess-button">Arcane</button>
+        </div>
+    
+        <p id="feedback"></p>
+    </div>
+    
+    <div id="results"></div>
+    
     <script type="module" src="./js/main.js"></script>   
 </body>
 </html>
