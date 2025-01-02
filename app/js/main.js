@@ -46,25 +46,19 @@ function getRandomWeapons(data, n) {
     name: weapon.name || "Unknown Weapon",
     description: weapon.description || "No description available.",
     image: weapon.image || "https://via.placeholder.com/300",
-    scalesWith: determineCorrectScaling(weapon.scalesWith), // Process scaling data
+    scalesWith: processScalingData(weapon.scalesWith), // Process scaling data
   }));
 }
 
-// Determine the correct scaling(s) for a weapon
-function determineCorrectScaling(scalesWith) {
-  // Group scaling attributes by their priority
-  const scalingGroups = scalesWith.reduce((groups, scaling) => {
-    const priority = scalingPriority[scaling.scaling] || 0;
-    if (!groups[priority]) {
-      groups[priority] = [];
-    }
-    groups[priority].push(scaling.name);
-    return groups;
-  }, {});
-
-  // Get the highest priority group
-  const highestPriority = Math.max(...Object.keys(scalingGroups).map(Number));
-  return scalingGroups[highestPriority] || [];
+// Process and sort scaling data by priority
+function processScalingData(scalesWith) {
+  return scalesWith
+    .map((scaling) => ({
+      name: scaling.name,
+      priority: scalingPriority[scaling.scaling] || 0,
+    }))
+    .sort((a, b) => b.priority - a.priority) // Sort by priority (descending)
+    .map((scaling) => scaling.name); // Return names only
 }
 
 // Display the current weapon
@@ -101,13 +95,17 @@ function makeGuess(choice) {
   // Check if the choice is correct
   if (correctScaling.includes(choice)) {
     correctGuesses.push(weapon.name);
+    document.getElementById("feedback").innerText = "Correct!";
   } else {
     wrongGuesses.push(weapon.name);
+    document.getElementById("feedback").innerText = "Wrong!";
   }
 
-  // Move to the next weapon immediately
-  currentWeaponIndex++;
-  displayWeapon();
+  // Move to the next weapon after a short delay
+  setTimeout(() => {
+    currentWeaponIndex++;
+    displayWeapon();
+  }, 1000);
 }
 
 // Display the final results
