@@ -54,11 +54,23 @@ function getRandomWeapons(data, n) {
 function processScalingData(scalesWith) {
   return scalesWith
     .map((scaling) => ({
-      name: scaling.name,
+      name: normalizeScalingName(scaling.name),
       priority: scalingPriority[scaling.scaling] || 0,
     }))
     .sort((a, b) => b.priority - a.priority) // Sort by priority (descending)
     .map((scaling) => scaling.name); // Return names only
+}
+
+// Normalize scaling names for consistency
+function normalizeScalingName(name) {
+  const mapping = {
+    Str: "Strength",
+    Dex: "Dexterity",
+    Int: "Intelligence",
+    Fai: "Faith",
+    Arc: "Arcane",
+  };
+  return mapping[name] || name;
 }
 
 // Display the current weapon
@@ -86,14 +98,15 @@ function displayWeapon() {
 // Handle user's guess
 function makeGuess(choice) {
   const weapon = weapons[currentWeaponIndex];
-  const correctScaling = weapon.scalesWith;
+  const correctScaling = weapon.scalesWith.map((s) => s.toLowerCase());
+  const normalizedChoice = choice.toLowerCase();
 
   // Log user's choice and correct answers
   console.log(`User's choice: ${choice}`);
   console.log(`Correct answers: ${correctScaling.join(", ")}`);
 
   // Check if the choice is correct
-  if (correctScaling.includes(choice)) {
+  if (correctScaling.includes(normalizedChoice)) {
     correctGuesses.push(weapon.name);
     document.getElementById("feedback").innerText = "Correct!";
   } else {
@@ -144,7 +157,7 @@ function retakeQuiz() {
   document.getElementById("results").innerHTML = "";
   document.getElementById("game-container").style.display = "block";
 
-  displayWeapon(); // Restart the game
+  fetchWeapons(); // Reload weapons for a fresh game
 }
 
 // Attach event listeners to buttons
