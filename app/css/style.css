@@ -24,7 +24,7 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #2d2d2d;
+    background-color: var(--tertiary);
     color: #fff;
     text-align: center;
 }
@@ -39,10 +39,11 @@ h1 {
     margin: auto;
     width: 90%;
     max-width: 600px;
-    background-color: #444;
+    background-color: var(--secondary);
     border-radius: 8px;
     padding: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+    align-items: center;
 }
 
 /* Image Styling */
@@ -57,7 +58,7 @@ img {
 button {
     margin: 10px;
     padding: 10px 20px;
-    background-color: #5c8ef6;
+    background-color: var(--primary);
     color: #fff;
     border: none;
     border-radius: 4px;
@@ -67,7 +68,7 @@ button {
 }
 
 button:hover {
-    background-color: #436ecf;
+    background-color: gold;
 }
 
 /* Results Section */

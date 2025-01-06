@@ -5,6 +5,7 @@ let weapons = [];
 let currentWeaponIndex = 0;
 let correctGuesses = [];
 let wrongGuesses = [];
+let canAnswer = true; // Prevent spamming answers
 
 // Scaling priority mapping
 const scalingPriority = {
@@ -24,10 +25,16 @@ async function fetchWeapons() {
     );
     const data = await response.json();
 
-    // Filter valid weapons (only those with "scalesWith" data)
+    // Filter valid weapons (only those with "scalesWith" data and valid scaling letters)
     const validWeapons = data.data.filter(
-      (weapon) => weapon.scalesWith && weapon.scalesWith.length > 0
+      (weapon) =>
+        weapon.scalesWith &&
+        weapon.scalesWith.length > 0 &&
+        weapon.scalesWith.some((scaling) =>
+          ["A", "B", "C", "D", "E", "S"].includes(scaling.scaling)
+        )
     );
+
     weapons = getRandomWeapons(validWeapons, 25);
 
     displayWeapon(); // Start the game by displaying the first weapon
@@ -53,10 +60,15 @@ function getRandomWeapons(data, n) {
 // Process and sort scaling data by priority
 function processScalingData(scalesWith) {
   return scalesWith
-    .map((scaling) => ({
-      name: normalizeScalingName(scaling.name),
-      priority: scalingPriority[scaling.scaling] || 0,
-    }))
+    .map((scaling) =>
+      scalingPriority[scaling.scaling]
+        ? {
+            name: normalizeScalingName(scaling.name),
+            priority: scalingPriority[scaling.scaling],
+          }
+        : null
+    ) // Filter out invalid scaling
+    .filter(Boolean) // Remove null values
     .sort((a, b) => b.priority - a.priority) // Sort by priority (descending)
     .map((scaling) => scaling.name); // Return names only
 }
@@ -93,10 +105,18 @@ function displayWeapon() {
 
   // Clear feedback for the new weapon
   document.getElementById("feedback").innerText = "";
+
+  // Allow answering after a short delay to ensure the weapon has loaded
+  canAnswer = false;
+  setTimeout(() => {
+    canAnswer = true;
+  }, 1000); // Delay of 1 second
 }
 
 // Handle user's guess
 function makeGuess(choice) {
+  if (!canAnswer) return; // Prevent spamming
+
   const weapon = weapons[currentWeaponIndex];
   const correctScaling = weapon.scalesWith.map((s) => s.toLowerCase());
   const normalizedChoice = choice.toLowerCase();
