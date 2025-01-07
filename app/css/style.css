@@ -1,16 +1,18 @@
-html,body,*{
-    margin: padding 0;
+html, body, * {
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
-    font-size:10px;
+    font-size: 10px;
     background-color: var(--tertiary);
 }
 
-:root{
-    --primary: #ffffff;
-    --tertiary: #292323;
-    --secondary: #829bb3;
-    --fontcolor: black;
-    --button:white;
+:root {
+    --primary: #041b36;
+    --tertiary: #192355;
+    --secondary: #020637;
+    --third: #0b0713;
+    --fontcolor: white; 
+    --button: #a1144a;
 
     --h1: 7.594rem;
     --h2: 5.063rem;
@@ -19,61 +21,47 @@ html,body,*{
     --h5: 1.5rem;
 }
 
-/* General styling */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: var(--tertiary);
-    color: #fff;
+h1{
+    font-family: "Handjet", sans-serif;
+    font-optical-sizing: auto;
+
+    font-size: var(--h1);
+    color: var(--fontcolor);
     text-align: center;
 }
 
-/* Header */
-h1 {
-    margin: 20px 0;
-}
-
-/* Game Container */
-#game-container {
-    margin: auto;
-    width: 90%;
-    max-width: 600px;
-    background-color: var(--secondary);
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
-    align-items: center;
-}
-
-/* Image Styling */
-img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    margin-bottom: 20px;
-}
-
-/* Buttons */
-button {
-    margin: 10px;
-    padding: 10px 20px;
+#game-container{
+    width: 90vw;
     background-color: var(--primary);
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.3s ease;
+    border-radius: 2rem;
+    border-width: 1.5rem;
 }
 
-button:hover {
-    background-color: gold;
+
+h2{
+    font-family: "Handjet", sans-serif;
+    font-optical-sizing: auto;
+
+    font-size: var(--h2);
+    color: var(--fontcolor);
+    text-align: center;
+    margin-top: ;
 }
+
+p{
+    font-family: "Rajdhani", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+    font-size: var(--h4);
+    line-height: 0.6;
+}
+
+
+
 
 /* Results Section */
 #results {
-    margin-top: 20px;
+    margin: 0 auto;
     font-size: 1.1rem;
 }
 
