@@ -6,6 +6,7 @@ let currentWeaponIndex = 0;
 let correctGuesses = [];
 let wrongGuesses = [];
 let canAnswer = true; // Prevent spamming answers
+let timeoutId = null; // Track timer for enabling answers
 
 // Scaling priority mapping
 const scalingPriority = {
@@ -14,7 +15,7 @@ const scalingPriority = {
   C: 3,
   B: 4,
   A: 5,
-  S: 6, // In some games, "S" represents the highest scaling
+  S: 6, // "S" represents the highest scaling
 };
 
 // Fetch weapons from the API and initialize the game
@@ -106,16 +107,24 @@ function displayWeapon() {
   // Clear feedback for the new weapon
   document.getElementById("feedback").innerText = "";
 
-  // Allow answering after a short delay to ensure the weapon has loaded
+  // Prevent answering immediately
   canAnswer = false;
-  setTimeout(() => {
+
+  // Clear any existing timeout to avoid issues
+  if (timeoutId) clearTimeout(timeoutId);
+
+  // Enable answering after a delay
+  timeoutId = setTimeout(() => {
     canAnswer = true;
-  }, 1000); // Delay of 1 second
+  }, 1000); // 1.5-second delay
 }
 
 // Handle user's guess
 function makeGuess(choice) {
-  if (!canAnswer) return; // Prevent spamming
+  if (!canAnswer) {
+    document.getElementById("feedback").innerText = "Wait for the next weapon!";
+    return; // Prevent spamming
+  }
 
   const weapon = weapons[currentWeaponIndex];
   const correctScaling = weapon.scalesWith.map((s) => s.toLowerCase());
@@ -135,10 +144,11 @@ function makeGuess(choice) {
   }
 
   // Move to the next weapon after a short delay
+  canAnswer = false;
   setTimeout(() => {
     currentWeaponIndex++;
     displayWeapon();
-  }, 1000);
+  }, 700);
 }
 
 // Display the final results

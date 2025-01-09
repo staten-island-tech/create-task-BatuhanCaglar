@@ -29,7 +29,7 @@ body{
     width: 75vw;
 
     margin: 0 auto;    
-    margin-top: 5rem;
+    margin-top: 2rem;
     padding: 2rem;
     border-radius: 2rem;
     border-width: 1.5rem;
@@ -57,15 +57,17 @@ h1{
 }
 
 #game-container{
-    width: 60vw;
+    width: 50vw;
+    height: auto;
     background-color: var(--tertiary);
-    border-radius: 2rem;
     border-width: 1.5rem;
     margin: 0 auto;
-    margin-top: 5rem;
+    margin-top: 2.5rem;
     justify-content: center;
     padding: 3rem;
-
+    margin-bottom: 5rem;
+    border: 2rem solid var(--secondary);
+    border-radius: 1.5em;
 }
 
 
@@ -108,17 +110,47 @@ img {
 /* Feedback Text */
 #feedback {
     margin-top: 10px;
-    font-size: 1rem;
+    font-size: var(--h4);
     color: #ffd700;
 }
 
 #buttons{
     width: 75%;
-    padding: 2.5rem;
+    padding: 3rem;
     margin: 0 auto;
     margin-top: 4rem;
     background-color: var(--button);
     border-radius: 2rem;
     border-width: 1.5rem;
     align-items: center;
+    display: flex;
+    justify-content: center; /* Centers the buttons horizontally */
+    gap: 1rem; /* Adds space between the buttons */
+}
+
+.guess-button{
+    width: 30%;
+    height: auto;
+    font-family: "Rajdhani", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+    font-size: var(--h4);
+    border-radius: 1rem;
+    border: white;
+    padding: 0.5rem;
+}
+
+button:hover{
+    transition-duration: 0.2s;
+    transform: scale(1.2);
+    background-color: var(--secondary);
+    border: var(--secondary);
+    color: white;
+}
+  
+button:active{
+    transition-duration: 0.2s;
+    background-color: goldenrod;
+
+    transform: scale(1.2);
 }
