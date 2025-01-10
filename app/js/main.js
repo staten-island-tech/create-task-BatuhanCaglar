@@ -157,17 +157,19 @@ function showResults() {
   const percentage = ((correctGuesses.length / total) * 100).toFixed(2);
 
   const resultsHTML = `
-        <h2>Game Over!</h2>
-        <p>Correct: ${correctGuesses.length} / ${total} (${percentage}%)</p>
-        <p>Wrong: ${wrongGuesses.length}</p>
-        <h3>Correct Answers:</h3>
-        <ul>${correctGuesses.map((name) => `<li>${name}</li>`).join("")}</ul>
-        <h3>Wrong Answers:</h3>
-        <ul>${wrongGuesses.map((name) => `<li>${name}</li>`).join("")}</ul>
-        <button id="retry-button">Retake Quiz</button>
-    `;
+      <h2>Game Over!</h2>
+      <p>Correct: ${correctGuesses.length} / ${total} (${percentage}%)</p>
+      <p>Wrong: ${wrongGuesses.length}</p>
+      <h3>Correct Answers:</h3>
+      <ul>${correctGuesses.map((name) => `<li>${name}</li>`).join("")}</ul>
+      <h3>Wrong Answers:</h3>
+      <ul>${wrongGuesses.map((name) => `<li>${name}</li>`).join("")}</ul>
+      <button id="retry-button">Retake Quiz</button>
+  `;
 
-  document.getElementById("results").innerHTML = resultsHTML;
+  const resultsDiv = document.getElementById("results");
+  resultsDiv.innerHTML = resultsHTML;
+  resultsDiv.style.display = "block"; // Show the results
 
   // Hide the game container
   document.getElementById("game-container").style.display = "none";

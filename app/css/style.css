@@ -70,6 +70,44 @@ h1{
     border-radius: 1.5em;
 }
 
+#results{
+    display: none;
+    width: 50vw;
+    height: auto;
+    border-width: 1.5rem;
+    border: radius 1.5rem;
+    border: 2rem solid var(--secondary);
+    background-color: var(--tertiary);
+    padding: 3rem;
+    justify-content: center;
+
+    margin: 0auto;
+    margin-top: 50rem;
+
+}
+
+li{
+    font-family: "Rajdhani", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+    font-size: var(--h5);
+    line-height: 3rem;
+    text-align: center;
+    color: var(--fontcolor);
+    row-gap: 0.5rem;
+}
+
+
+
+h3{
+    font-family: "Handjet", sans-serif;
+    font-optical-sizing: auto;
+
+    font-size: var(--h4);
+    color: var(--fontcolor);
+    text-align: center;
+}
+
 
 h2{
     font-family: "Handjet", sans-serif;
@@ -139,6 +177,35 @@ img {
     border: white;
     padding: 0.5rem;
 }
+
+#retry-button{
+    width: 30%;
+    height: auto;
+    font-family: "Rajdhani", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+    font-size: var(--h4);
+    border-radius: 1rem;
+    border: white;
+    padding: 0.5rem;
+    margin-top: 2rem;
+}
+
+#retry-button:hover{
+    transition-duration: 0.2s;
+    transform: scale(1.2);
+    background-color: var(--button);
+    border: var(--button);
+    color: white;
+}
+  
+#retry-button:active{
+    transition-duration: 0.2s;
+    background-color: goldenrod;
+
+    transform: scale(1.2);
+}
+
 
 button:hover{
     transition-duration: 0.2s;
