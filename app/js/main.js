@@ -16,7 +16,6 @@ const scalingPriority = {
   S: 6, 
 };
 
-// Fetch weapons data
 async function fetchWeapons() {
   try {
     const response = await fetch(
@@ -43,7 +42,6 @@ async function fetchWeapons() {
   }
 }
 
-// Get random weapons
 function getRandomWeapons(data, n) {
   const shuffled = data.sort(() => 0.5 - Math.random());
   return shuffled.slice(0, n).map((weapon) => ({
@@ -54,7 +52,6 @@ function getRandomWeapons(data, n) {
   }));
 }
 
-// Process scaling data
 function processScalingData(scalesWith) {
   return scalesWith
     .map((scaling) =>
@@ -70,7 +67,6 @@ function processScalingData(scalesWith) {
     .map((scaling) => scaling.name);
 }
 
-// Normalize scaling names
 function normalizeScalingName(name) {
   const mapping = {
     Str: "Strength",
@@ -82,7 +78,6 @@ function normalizeScalingName(name) {
   return mapping[name] || name;
 }
 
-// Display weapon
 function displayWeapon() {
   if (currentWeaponIndex >= weapons.length) {
     showResults();
@@ -108,7 +103,6 @@ function displayWeapon() {
   }, 1000);
 }
 
-// Process answers (iterative algorithm)
 function processAnswers(answers, correctScaling) {
   document.getElementById("feedback").innerHTML = "";
 
@@ -130,7 +124,6 @@ function processAnswers(answers, correctScaling) {
   });
 }
 
-// Make a guess
 function makeGuess(choice) {
   if (!canAnswer) {
     document.getElementById("feedback").innerText = "Wait for the next weapon!";
@@ -149,7 +142,6 @@ function makeGuess(choice) {
   }, 700);
 }
 
-// Show results
 function showResults() {
   const total = correctGuesses.length + wrongGuesses.length;
   const percentage = ((correctGuesses.length / total) * 100).toFixed(2);
@@ -174,7 +166,6 @@ function showResults() {
   document.getElementById("retry-button").addEventListener("click", retakeQuiz);
 }
 
-// Retake quiz
 function retakeQuiz() {
   currentWeaponIndex = 0;
   correctGuesses = [];
@@ -186,7 +177,6 @@ function retakeQuiz() {
   fetchWeapons();
 }
 
-// Add event listeners to buttons
 document.querySelectorAll(".guess-button").forEach((button) => {
   button.addEventListener("click", () => {
     makeGuess(button.innerText);
