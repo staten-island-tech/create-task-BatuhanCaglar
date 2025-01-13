@@ -1,24 +1,22 @@
 import "../css/style.css";
 
-// Global variables
 let weapons = [];
 let currentWeaponIndex = 0;
 let correctGuesses = [];
 let wrongGuesses = [];
-let canAnswer = true; // Prevent spamming answers
-let timeoutId = null; // Track timer for enabling answers
+let canAnswer = true; 
+let timeoutId = null;
 
-// Scaling priority mapping
 const scalingPriority = {
   E: 1,
   D: 2,
   C: 3,
   B: 4,
   A: 5,
-  S: 6, // "S" represents the highest scaling
+  S: 6, 
 };
 
-// Fetch weapons from the API and initialize the game
+// Fetch weapons data
 async function fetchWeapons() {
   try {
     const response = await fetch(
@@ -26,7 +24,6 @@ async function fetchWeapons() {
     );
     const data = await response.json();
 
-    // Filter valid weapons (only those with "scalesWith" data and valid scaling letters)
     const validWeapons = data.data.filter(
       (weapon) =>
         weapon.scalesWith &&
@@ -37,8 +34,7 @@ async function fetchWeapons() {
     );
 
     weapons = getRandomWeapons(validWeapons, 25);
-
-    displayWeapon(); // Start the game by displaying the first weapon
+    displayWeapon();
   } catch (error) {
     console.error("Error fetching weapons:", error);
     alert(
@@ -47,18 +43,18 @@ async function fetchWeapons() {
   }
 }
 
-// Utility function: Randomly pick N items from the array
+// Get random weapons
 function getRandomWeapons(data, n) {
   const shuffled = data.sort(() => 0.5 - Math.random());
   return shuffled.slice(0, n).map((weapon) => ({
     name: weapon.name || "Unknown Weapon",
     description: weapon.description || "No description available.",
     image: weapon.image || "https://via.placeholder.com/300",
-    scalesWith: processScalingData(weapon.scalesWith), // Process scaling data
+    scalesWith: processScalingData(weapon.scalesWith),
   }));
 }
 
-// Process and sort scaling data by priority
+// Process scaling data
 function processScalingData(scalesWith) {
   return scalesWith
     .map((scaling) =>
@@ -68,13 +64,13 @@ function processScalingData(scalesWith) {
             priority: scalingPriority[scaling.scaling],
           }
         : null
-    ) // Filter out invalid scaling
-    .filter(Boolean) // Remove null values
-    .sort((a, b) => b.priority - a.priority) // Sort by priority (descending)
-    .map((scaling) => scaling.name); // Return names only
+    )
+    .filter(Boolean)
+    .sort((a, b) => b.priority - a.priority)
+    .map((scaling) => scaling.name);
 }
 
-// Normalize scaling names for consistency
+// Normalize scaling names
 function normalizeScalingName(name) {
   const mapping = {
     Str: "Strength",
@@ -86,64 +82,66 @@ function normalizeScalingName(name) {
   return mapping[name] || name;
 }
 
-// Display the current weapon
+// Display weapon
 function displayWeapon() {
   if (currentWeaponIndex >= weapons.length) {
-    showResults(); // End the game when all weapons are used
+    showResults();
     return;
   }
 
   const weapon = weapons[currentWeaponIndex];
-
-  // Log scaling data to the console
   console.log(`Scaling data for ${weapon.name}:`, weapon.scalesWith);
 
-  // Update the DOM elements with weapon details
   document.getElementById("weapon-name").innerText = weapon.name;
   document.getElementById("weapon-description").innerText = weapon.description;
   document.getElementById("weapon-image").src = weapon.image;
   document.getElementById("weapon-image").alt = weapon.name;
 
-  // Clear feedback for the new weapon
   document.getElementById("feedback").innerText = "";
 
-  // Prevent answering immediately
   canAnswer = false;
 
-  // Clear any existing timeout to avoid issues
   if (timeoutId) clearTimeout(timeoutId);
 
-  // Enable answering after a delay
   timeoutId = setTimeout(() => {
     canAnswer = true;
-  }, 1000); // 1.5-second delay
+  }, 1000);
 }
 
-// Handle user's guess
+// Process answers (iterative algorithm)
+function processAnswers(answers, correctScaling) {
+  document.getElementById("feedback").innerHTML = "";
+
+  for (let i = 0; i < answers.length; i++) {
+    const answer = answers[i].toLowerCase();
+
+    if (correctScaling.includes(answer)) {
+      correctGuesses.push(weapons[currentWeaponIndex].name);
+      document.getElementById("feedback").innerHTML += `<p>Answer ${i + 1}: Correct!</p>`;
+    } else {
+      wrongGuesses.push(weapons[currentWeaponIndex].name);
+      document.getElementById("feedback").innerHTML += `<p>Answer ${i + 1}: Wrong!</p>`;
+    }
+  }
+
+  console.log("Processed answers:", {
+    correctGuesses,
+    wrongGuesses,
+  });
+}
+
+// Make a guess
 function makeGuess(choice) {
   if (!canAnswer) {
     document.getElementById("feedback").innerText = "Wait for the next weapon!";
-    return; // Prevent spamming
+    return;
   }
 
   const weapon = weapons[currentWeaponIndex];
   const correctScaling = weapon.scalesWith.map((s) => s.toLowerCase());
-  const normalizedChoice = choice.toLowerCase();
 
-  // Log user's choice and correct answers
-  console.log(`User's choice: ${choice}`);
-  console.log(`Correct answers: ${correctScaling.join(", ")}`);
+  processAnswers([choice], correctScaling);
 
-  // Check if the choice is correct
-  if (correctScaling.includes(normalizedChoice)) {
-    correctGuesses.push(weapon.name);
-    document.getElementById("feedback").innerText = "Correct!";
-  } else {
-    wrongGuesses.push(weapon.name);
-    document.getElementById("feedback").innerText = "Wrong!";
-  }
-
-  // Move to the next weapon after a short delay
   canAnswer = false;
   setTimeout(() => {
     currentWeaponIndex++;
@@ -151,7 +149,7 @@ function makeGuess(choice) {
   }, 700);
 }
 
-// Display the final results
+// Show results
 function showResults() {
   const total = correctGuesses.length + wrongGuesses.length;
   const percentage = ((correctGuesses.length / total) * 100).toFixed(2);
@@ -169,35 +167,30 @@ function showResults() {
 
   const resultsDiv = document.getElementById("results");
   resultsDiv.innerHTML = resultsHTML;
-  resultsDiv.style.display = "block"; // Show the results
+  resultsDiv.style.display = "block";
 
-  // Hide the game container
   document.getElementById("game-container").style.display = "none";
 
-  // Attach event listener to retry button
   document.getElementById("retry-button").addEventListener("click", retakeQuiz);
 }
 
-// Retake the quiz
+// Retake quiz
 function retakeQuiz() {
-  // Reset variables
   currentWeaponIndex = 0;
   correctGuesses = [];
   wrongGuesses = [];
 
-  // Clear results and show the game container again
   document.getElementById("results").innerHTML = "";
   document.getElementById("game-container").style.display = "block";
 
-  fetchWeapons(); // Reload weapons for a fresh game
+  fetchWeapons();
 }
 
-// Attach event listeners to buttons
+// Add event listeners to buttons
 document.querySelectorAll(".guess-button").forEach((button) => {
   button.addEventListener("click", () => {
-    makeGuess(button.innerText); // Pass button text (e.g., "Strength") as the guess
+    makeGuess(button.innerText);
   });
 });
 
-// Start the game
 fetchWeapons();
